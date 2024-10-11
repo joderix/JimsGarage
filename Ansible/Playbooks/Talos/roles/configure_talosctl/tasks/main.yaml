@@ -1,26 +1,52 @@
 ---
 # Update TalosCTL
 - name: Update TalosCTL configs
-  ansible.builtin.command: talosctl config endpoint {{ cp_ip }} --talosconfig {{ cfg_file }}
+  ansible.builtin.command: "{{ talos_bin }} config endpoint {{ cp_ip }} --talosconfig {{ cfg_file }}"
   changed_when: true
 
 - name: Update TalosCTL configs
-  ansible.builtin.command: talosctl config node {{ cp_ip }} --talosconfig {{ cfg_file }}
+  ansible.builtin.command: "{{ talos_bin }} config node {{ cp_ip }} --talosconfig {{ cfg_file }}"
   changed_when: true
 
-  #################################
-  # WAIT FOR REBOOT & BOOTSTRAP   #
-  #################################
-- name: Keep trying to bootstrap
-  ansible.builtin.command:
-    cmd: "talosctl bootstrap --talosconfig {{ cfg_file }}"
-  register: bootstrap_result
-  retries: 10
-  delay: 30
-  until: bootstrap_result.rc == 0
-  changed_when: bootstrap_result.rc == 0
+- name: Remove commented out TALOSCONFIG from .bashrc
+  ansible.builtin.lineinfile:
+    dest: ~/.bashrc
+    regexp: '^(?:#TALOSCONFIG.*)'
+    state: absent
+
+- name: Add TALOSCONFIG to .bashrc
+  ansible.builtin.lineinfile:
+    dest: ~/.bashrc
+    line: 'TALOSCONFIG=~/.talos/talosconfig'
+    state: present
+
+#   #################################
+#   # WAIT FOR REBOOT & BOOTSTRAP   #
+#   #################################
+# - name: Keep trying to bootstrap
+#   ansible.builtin.command:
+#     cmd: "{{ talos_bin }} bootstrap --talosconfig {{ cfg_file }}"
+#   register: bootstrap_result
+#   retries: 10
+#   delay: 30
+#   until: bootstrap_result.rc == 0
+#   changed_when: bootstrap_result.rc == 0
 
 # Grab Kubeconfig
 - name: Get Kubeconfig
-  ansible.builtin.command: talosctl kubeconfig . --talosconfig {{ cfg_file }}
+  ansible.builtin.command: "{{ talos_bin }} kubeconfig {{ cfg_dir }} --talosconfig {{ cfg_file }}"
   changed_when: true
+
+- name: Remove commented out KUBECONFIG from .bashrc
+  ansible.builtin.lineinfile:
+    dest: ~/.bashrc
+    regexp: ^(?:#KUBECONFIG.*)
+    state: absent
+
+- name: Add KUBECONFIG to .bashrc
+  ansible.builtin.lineinfile:
+    dest: ~/.bashrc
+    line: KUBECONFIG=~/.talos/kubeconfig
+    state: present
+  # notify:
+  #   - reload nginx

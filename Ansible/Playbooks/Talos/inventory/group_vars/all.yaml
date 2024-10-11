@@ -4,17 +4,16 @@ arch: "amd64"
 talos_version: v1.8.1
 talosctl_version: v1.8.1
 talos_install_image: "factory.talos.dev/installer/ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515"
-talos_cmd: "talosctl gen config talos-proxmox-cluster"
+talos_cmd: "/home/{{ ansible_user }}/.local/bin/talosctl gen config talos-proxmox-cluster"
+talos_bin: "/home/{{ ansible_user }}/.local/bin/talosctl"
 
 cp_ip: 192.168.3.61
 
-controlplanes:
-  - cp_2: 192.168.3.62
-  - cp_3: 192.168.3.63
+cp_1: 192.168.3.62
+cp_2: 192.168.3.63
 
-workers:
-  - worker_1: 192.168.3.71
-  - worker_2: 192.168.3.72
+worker_1: 192.168.3.71
+worker_2: 192.168.3.72
 
 cfg_dir: "/home/{{ ansible_user }}/.talos"
 cfg_file: "/home/{{ ansible_user }}/.talos/talosconfig"
@@ -28,5 +27,5 @@ lb_range: 192.168.3.80-192.168.3.90
 lb_pool_name: first-pool
 
 ansible_user: ansible
-ansible_become: true
+ansible_become: false
 ansible_become_method: sudo

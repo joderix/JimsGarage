@@ -1,21 +1,17 @@
 ---
 # Generate Machine Configurations. This is using the qemu agent as per: https://www.talos.dev/v1.7/talos-guides/install/virtualized-platforms/proxmox/
-- name: Show all the hosts in workers
+- name: Show all the worker nodes
   ansible.builtin.debug:
     msg: "{{ item }}"
-  loop: "{{ workers }}"
+  loop:
+    - "{{ worker_1 }}"
+    - "{{ worker_2 }}"
   # loop: "{{ query('inventory_hostnames', 'agents') }}"
 
 - name: Apply config to worker nodes
   ansible.builtin.command:
-    cmd: talosctl apply-config --insecure --nodes {{ item }} --file {{ cfg_dir }}/worker.yaml
-  loop: "{{ workers }}"
-    # - "{{ worker_1 }}"
-    # - "{{ worker_2 }}"
+    cmd: "{{ talos_bin }} apply-config --insecure --nodes {{ item }} --file {{ cfg_dir }}/worker.yaml"
+  loop:
+    - "{{ worker_1 }}"
+    - "{{ worker_2 }}"
   changed_when: true
-  # register: workers_output
-
-# - name: Apply config to second worker
-#   ansible.builtin.command:
-#     cmd: talosctl apply-config --insecure --nodes {{ worker_2 }} --file {{ cfg_dir }}/worker.yaml
-#   changed_when: true
