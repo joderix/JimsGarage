@@ -6,6 +6,7 @@
     dest: /usr/local/bin/talosctl
     mode: '0755'  # Make the binary executable
   register: download_result  # Register the result for debugging or verification
+  become: true
 
 - name: Display download result
   ansible.builtin.debug:

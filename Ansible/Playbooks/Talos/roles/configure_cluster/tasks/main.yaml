@@ -1,7 +1,7 @@
 ---
 - name: Check that the config file doesn't already exist
   ansible.builtin.stat:
-    path: "{{ config_file }}"
+    path: "{{ cfg_file }}"
   register: stat_result
 
 # Generate Machine Configurations. This is using the qemu agent as per: https://www.talos.dev/v1.7/talos-guides/install/virtualized-platforms/proxmox/
