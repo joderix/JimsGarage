@@ -1,11 +1,11 @@
 ---
 # Update TalosCTL
 - name: Update TalosCTL configs
-  ansible.builtin.command: talosctl config endpoint {{ control_plane_ip }} --talosconfig {{ config_file }}
+  ansible.builtin.command: talosctl config endpoint {{ cp_ip }} --talosconfig {{ cfg_file }}
   changed_when: true
 
 - name: Update TalosCTL configs
-  ansible.builtin.command: talosctl config node {{ control_plane_ip }} --talosconfig {{ config_file }}
+  ansible.builtin.command: talosctl config node {{ cp_ip }} --talosconfig {{ cfg_file }}
   changed_when: true
 
   #################################
@@ -13,7 +13,7 @@
   #################################
 - name: Keep trying to bootstrap
   ansible.builtin.command:
-    cmd: "talosctl bootstrap --talosconfig {{ config_file }}"
+    cmd: "talosctl bootstrap --talosconfig {{ cfg_file }}"
   register: bootstrap_result
   retries: 10
   delay: 30
@@ -22,5 +22,5 @@
 
 # Grab Kubeconfig
 - name: Get Kubeconfig
-  ansible.builtin.command: talosctl kubeconfig . --talosconfig {{ config_file }}
+  ansible.builtin.command: talosctl kubeconfig . --talosconfig {{ cfg_file }}
   changed_when: true
