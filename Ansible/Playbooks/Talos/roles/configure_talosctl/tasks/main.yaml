@@ -11,26 +11,32 @@
 - name: Remove commented out TALOSCONFIG from .bashrc
   ansible.builtin.lineinfile:
     dest: ~/.bashrc
-    regexp: '^(?:#TALOSCONFIG.*)'
+    regexp: ^(?:#export TALOSCONFIG.*)
+    state: absent
+
+- name: Remove commented out TALOSCONFIG from .bashrc
+  ansible.builtin.lineinfile:
+    dest: ~/.bashrc
+    regexp: ^(?:export TALOSCONFIG.*)
     state: absent
 
 - name: Add TALOSCONFIG to .bashrc
   ansible.builtin.lineinfile:
     dest: ~/.bashrc
-    line: 'TALOSCONFIG=~/.talos/talosconfig'
+    line: export TALOSCONFIG="{{ cfg_file }}"
     state: present
 
-#   #################################
-#   # WAIT FOR REBOOT & BOOTSTRAP   #
-#   #################################
-# - name: Keep trying to bootstrap
-#   ansible.builtin.command:
-#     cmd: "{{ talos_bin }} bootstrap --talosconfig {{ cfg_file }}"
-#   register: bootstrap_result
-#   retries: 10
-#   delay: 30
-#   until: bootstrap_result.rc == 0
-#   changed_when: bootstrap_result.rc == 0
+  #################################
+  # WAIT FOR REBOOT & BOOTSTRAP   #
+  #################################
+- name: Keep trying to bootstrap
+  ansible.builtin.command:
+    cmd: "{{ talos_bin }} bootstrap --talosconfig {{ cfg_file }}"
+  register: bootstrap_result
+  retries: 10
+  delay: 30
+  until: bootstrap_result.rc == 0
+  changed_when: bootstrap_result.rc == 0
 
 # Grab Kubeconfig
 - name: Get Kubeconfig
@@ -40,13 +46,19 @@
 - name: Remove commented out KUBECONFIG from .bashrc
   ansible.builtin.lineinfile:
     dest: ~/.bashrc
-    regexp: ^(?:#KUBECONFIG.*)
+    regexp: ^(?:#export KUBECONFIG.*)
+    state: absent
+
+- name: Remove commented out KUBECONFIG from .bashrc
+  ansible.builtin.lineinfile:
+    dest: ~/.bashrc
+    regexp: ^(?:export KUBECONFIG.*)
     state: absent
 
 - name: Add KUBECONFIG to .bashrc
   ansible.builtin.lineinfile:
     dest: ~/.bashrc
-    line: KUBECONFIG=~/.talos/kubeconfig
+    line: export KUBECONFIG="{{ kube_cfg_file }}"
     state: present
   # notify:
   #   - reload nginx
